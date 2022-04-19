@@ -1,3 +1,4 @@
+from tensorboard import summary
 import torch
 import config
 import torch.nn as nn
@@ -22,11 +23,43 @@ def generate_model(args):
     elif args.model == 'UNet':
         model = UNet(config.img_channel, config.class_num).to(device)
     return model
+# class SCNN(nn.Module):
+#     def __init__(
+#             self,
+#             input_size,
+#             ms_ks=9
+#     ):
+
+#     super(SCNN, self).__init__()
+#     # self.pretrained = pretrained
+#     self.net_init(input_size, ms_ks)
+#     # if not pretrained:
+    # self.weight_init()
+
+#     self.scale_background = 0.4
+#     self.scale_seg = 1.0
+#     self.scale_exist = 0.1
+
+#     self.ce_loss = nn.CrossEntropyLoss(weight=torch.tensor([self.scale_background, 1, 1, 1, 1]))
+#     self.bce_loss = nn.BCELoss()
+
 
 class UNet_ConvLSTM(nn.Module):
     def __init__(self, n_channels, n_classes):
         super(UNet_ConvLSTM, self).__init__()
         self.inc = inconv(n_channels, 64)
+
+        ms_ks=9
+        self.message_passing = nn.ModuleList()
+        self.message_passing.add_module('up_down', nn.Conv2d(64, 64, (1, ms_ks), padding=(0, ms_ks // 2), bias=False))
+        self.message_passing.add_module('down_up', nn.Conv2d(64, 64, (1, ms_ks), padding=(0, ms_ks // 2), bias=False))
+        self.message_passing.add_module('left_right',
+                                        nn.Conv2d(64, 64, (ms_ks, 1), padding=(ms_ks // 2, 0), bias=False))
+        self.message_passing.add_module('right_left',
+                                        nn.Conv2d(64, 64, (ms_ks, 1), padding=(ms_ks // 2, 0), bias=False))
+
+
+
         self.down1 = down(64, 128)
         self.down2 = down(128, 256)
         self.down3 = down(256, 512)
@@ -45,12 +78,47 @@ class UNet_ConvLSTM(nn.Module):
                                  bias=True,
                                  return_all_layers=False)
 
+    def message_passing_forward(self, x):
+        Vertical = [True, True, False, False]
+        Reverse = [False, True, False, True]
+        for ms_conv, v, r in zip(self.message_passing, Vertical, Reverse):
+            x = self.message_passing_once(x, ms_conv, v, r)
+        return x
+
+    def message_passing_once(self, x, conv, vertical=True, reverse=False):
+        """
+        Argument:
+        ----------
+        x: input tensor
+        vertical: vertical message passing or horizontal
+        reverse: False for up-down or left-right, True for down-up or right-left
+        """
+        nB, C, H, W = x.shape
+        if vertical:
+            slices = [x[:, :, i:(i + 1), :] for i in range(H)]
+            dim = 2
+        else:
+            slices = [x[:, :, :, i:(i + 1)] for i in range(W)]
+            dim = 3
+        if reverse:
+            slices = slices[::-1]
+
+        out = [slices[0]]
+        for i in range(1, len(slices)):
+            out.append(slices[i] + F.relu(conv(out[i - 1])))
+        if reverse:
+            out = out[::-1]
+        return torch.cat(out, dim=dim)
+
     def forward(self, x):
         x = torch.unbind(x, dim=1)
         data = []
         for item in x:
             x1 = self.inc(item)
-            x2 = self.down1(x1)
+
+            xSCNN = self.message_passing_forward(x1)
+
+            x2 = self.down1(xSCNN)
             x3 = self.down2(x2)
             x4 = self.down3(x3)
             x5 = self.down4(x4)

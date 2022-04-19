@@ -139,15 +139,16 @@ if __name__ == '__main__':
 
     # load model and weights
     model = generate_model(args)
+    # print(model)
     class_weight = torch.Tensor(config.class_weight)
     criterion = torch.nn.CrossEntropyLoss(weight=class_weight).to(device)
 
-    pretrained_dict = torch.load(config.pretrained_path)
-    model_dict = model.state_dict()
-    pretrained_dict_1 = {k: v for k, v in pretrained_dict.items() if (k in model_dict)}
-    model_dict.update(pretrained_dict_1)
-    model.load_state_dict(model_dict)
-
+    # pretrained_dict = torch.load(config.pretrained_path)
+    # model_dict = model.state_dict()
+    # pretrained_dict_1 = {k: v for k, v in pretrained_dict.items() if (k in model_dict)}
+    # model_dict.update(pretrained_dict_1)
+    # model.load_state_dict(model_dict)
+    
     # output the result pictures
     output_result(model, test_loader, device)
     # calculate the values of accuracy, precision, recall, f1_measure

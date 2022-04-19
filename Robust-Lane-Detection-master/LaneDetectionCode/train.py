@@ -6,6 +6,7 @@ from dataset import RoadSequenceDataset, RoadSequenceDatasetList
 from model import generate_model
 from torchvision import transforms
 from torch.optim import lr_scheduler
+from pytorch_model_summary import summary
 
 def train(args, epoch, model, train_loader, device, optimizer, criterion):
     since = time.time()
@@ -90,6 +91,8 @@ if __name__ == '__main__':
 
     #load model
     model = generate_model(args)
+    # print(model)
+
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     # optimizer = torch.optim.Adam([
@@ -108,12 +111,13 @@ if __name__ == '__main__':
     criterion = torch.nn.CrossEntropyLoss(weight=class_weight).to(device)
     best_acc = 0
 
-    pretrained_dict = torch.load(config.pretrained_path)
-    model_dict = model.state_dict()
+    # pretrained_dict = torch.load(config.pretrained_path)
+    # model_dict = model.state_dict()
 
-    pretrained_dict_1 = {k: v for k, v in pretrained_dict.items() if (k in model_dict)}
-    model_dict.update(pretrained_dict_1)
-    model.load_state_dict(model_dict)
+    # pretrained_dict_1 = {k: v for k, v in pretrained_dict.items() if (k in model_dict)}
+    # model_dict.update(pretrained_dict_1)
+    # model.load_state_dict(model_dict)
+    # print(model.state_dict())
 
     # train
     for epoch in range(1, args.epochs+1):

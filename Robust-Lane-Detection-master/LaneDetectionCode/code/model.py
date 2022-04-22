@@ -134,5 +134,7 @@ class STRNN(nn.Module):                             ##Segnet Based nn
         self.de_conv_1_3 = nn.Conv2d(in_channels=64, out_Channels=2, kernel_size=(3,3), padding=(1,1), stride=1)
         self.log_softmax = nn.LogSoftmax()
 
+    ########## Decoder Architecture Ends ##########
+
     def forward(self, input):
         pass

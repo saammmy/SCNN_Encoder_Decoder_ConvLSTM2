@@ -12,11 +12,11 @@ data_loader_numworkers = 8
 class_num = 2
 
 # path
-train_path = "../../../tvt_dataset/data/train_index.txt" #"./data/train_index.txt"
-val_path = "../../../tvt_dataset/data/val_index.txt"#"./data/val_index.txt"
-test_path = "../../../tvt_dataset/data/test_index_0530.txt" #"./data/test_index_0530.txt"
-save_path = "./save/result_new/"
-pretrained_path='../../../tvt_dataset/pretrained/unetlstm.pth'
+train_path = "C:/Users/pgpoojari/Desktop/Spring_2022/DL_group_project/tvt_dataset/trainset/train_index.txt" #"./data/train_index.txt"
+val_path = "C:/Users/pgpoojari/Desktop/Spring_2022/DL_group_project/tvt_dataset/trainset/val_index.txt"#"./data/val_index.txt"
+test_path = "C:/Users/pgpoojari/Desktop/Spring_2022/DL_group_project/tvt_dataset/trainset/test_index_0530.txt" #"./data/test_index_0530.txt"
+save_path = "C:/Users/pgpoojari/Desktop/Spring_2022/DL_group_project/SCNN_Encoder_Decoder_ConvLSTM2/Robust-Lane-Detection-master/LaneDetectionCode/save/result_new/"
+pretrained_path='C:/Users/pgpoojari/Desktop/Spring_2022/DL_group_project/pretrained/unetlstm.pth'
 
 # weight
 class_weight = [0.02, 1.02]

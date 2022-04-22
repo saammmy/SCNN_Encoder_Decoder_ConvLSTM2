@@ -40,9 +40,9 @@ class RoadSequenceDataset(Dataset):
 class RoadSequenceDatasetList(Dataset):
 
     def __init__(self, file_path, transforms):
-
         self.img_list = readTxt(file_path)
         self.dataset_size = len(self.img_list)
+        print(self.dataset_size)
         self.transforms = transforms
     def __len__(self):
         return self.dataset_size

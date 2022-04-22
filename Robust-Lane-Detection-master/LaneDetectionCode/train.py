@@ -6,7 +6,6 @@ from dataset import RoadSequenceDataset, RoadSequenceDatasetList
 from model import generate_model
 from torchvision import transforms
 from torch.optim import lr_scheduler
-from pytorch_model_summary import summary
 
 def train(args, epoch, model, train_loader, device, optimizer, criterion):
     since = time.time()

@@ -117,7 +117,6 @@ class UNet_ConvLSTM(nn.Module):
             x1 = self.inc(item)
 
             xSCNN = self.message_passing_forward(x1)
-
             x2 = self.down1(xSCNN)
             x3 = self.down2(x2)
             x4 = self.down3(x3)

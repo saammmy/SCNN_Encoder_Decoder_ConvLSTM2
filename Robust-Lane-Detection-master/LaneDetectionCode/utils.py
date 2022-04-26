@@ -135,8 +135,8 @@ class ConvLSTMCell(nn.Module):
         return h_next, c_next
 
     def init_hidden(self, batch_size):
-        return (torch.zeros(batch_size, self.hidden_dim, self.height, self.width).cuda(),
-                torch.zeros(batch_size, self.hidden_dim, self.height, self.width).cuda())
+        return (torch.zeros(batch_size, self.hidden_dim, self.height, self.width).cpu(),
+                torch.zeros(batch_size, self.hidden_dim, self.height, self.width).cpu())
 
 
 class ConvLSTM(nn.Module):
@@ -212,8 +212,6 @@ class ConvLSTM(nn.Module):
             for t in range(seq_len):
                 h, c = self.cell_list[layer_idx](input_tensor=cur_layer_input[:, t, :, :, :],
                                                  cur_state=[h, c])
-
-
                 output_inner.append(h)
 
             layer_output = torch.stack(output_inner, dim=1)
@@ -223,6 +221,7 @@ class ConvLSTM(nn.Module):
 
             layer_output_list.append(layer_output)
             last_state_list.append([h, c])
+            print(hidden_state[1][1])
 
         if not self.return_all_layers:
             layer_output_list = layer_output_list[-1:]
